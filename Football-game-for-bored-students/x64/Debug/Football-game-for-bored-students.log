@@ -1,0 +1,20 @@
+﻿  Frame.cpp
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(24,101): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(24,88): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(43,94): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(43,54): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(43,41): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(43,29): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(47,90): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(47,76): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(47,39): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(47,27): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(55,99): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(55,80): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(55,61): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(55,42): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(59,99): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(59,80): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(59,61): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+D:\Football-game-for-bored-students\Football-game-for-bored-students\Frame.cpp(59,42): warning C4244: "argument": konwersja z "double" do "int", możliwa utrata danych
+  Football-game-for-bored-students.vcxproj -> D:\Football-game-for-bored-students\x64\Debug\Football-game-for-bored-students.exe
