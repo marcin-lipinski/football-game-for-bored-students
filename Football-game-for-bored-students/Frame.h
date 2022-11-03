@@ -13,6 +13,7 @@ private:
 	double numberOfRows, numberOfColumns;
 	double positionArr[2][4];
 	double positions[2];
+	int temporaryPoint;
 
 public:
 	Frame(double, double, double, double, Board*);
@@ -28,6 +29,7 @@ private:
 	void replacemeValuesInPositionArr();
 	void getActiveBoxIndexes();
 	void positionArrReset();
+	void checkAndWrite(int, int, int, int, int, int);
 };
 
 

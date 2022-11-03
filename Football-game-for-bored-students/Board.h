@@ -8,15 +8,23 @@ public:
 	Board(int, int);
 	bool isRightConnected(int, int);
 	bool isBottomConnected(int, int);
+	bool isLeftConnected(int, int);
+	bool isUpperConnected(int, int);
 	bool isLeftRightConnected(int, int);
 	bool isRightLeftConnected(int, int);
-	bool setRightConnected(int, int);
-	bool setBottomConnected(int, int);
-	bool setLeftRightConnected(int, int);
-	bool setRightLeftConnected(int, int);
+	void setRightConnected(int, int);
+	void setBottomConnected(int, int);
+	void setLeftRightConnected(int, int);
+	void setRightLeftConnected(int, int);
+	void setLeftConnected(int, int);
+	void setUpperConnected(int, int);
+	int getCurrentPoint();
+	void setCurrentPoint(int);
+	int getVertex(int, int, int);
 private:
+	Point board[13][9];
 	int width, height;
-	Point board[11][9];
+	int currentPoint;
 	void initPoints();
 };
 

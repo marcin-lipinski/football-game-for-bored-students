@@ -5,6 +5,4 @@
 void Player::takeMove(Frame *frame) 
 {
 	frame->handlePlayerChoice();
-	int i, j, a, b;
-	std::cin >> i >> j >> a >> b;
 }
