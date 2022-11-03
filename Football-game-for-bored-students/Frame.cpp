@@ -6,12 +6,12 @@
 #define WHITE 255, 255, 255
 #define GREY 203, 193, 199
 
-Frame::Frame(double width, double height, double cols, double rows, Board *board) {
+Frame::Frame(double width, double height, double rows, double cols, Board *board) {
 	this->board = board;
-	initVariables(width, height, cols, rows);
+	initVariables(width, height, rows, cols);
 	initWindow();
 	createWindow();
-	initBoard();
+	renderBoard();
 }
 
 void Frame::initWindow() {
@@ -19,7 +19,7 @@ void Frame::initWindow() {
 }
 
 void Frame::createWindow() {
-	win = SDL_CreateWindow("Tic Tac Toe", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_BORDERLESS & SDL_WINDOW_SHOWN);
+	win = SDL_CreateWindow("Tic Tac Toe", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, (int)windowWidth, (int)windowHeight, SDL_WINDOW_BORDERLESS & SDL_WINDOW_SHOWN);
 	ren = SDL_CreateRenderer(win, -1, 0);
 }
 
@@ -28,21 +28,21 @@ void Frame::initVariables(double w, double h, double r, double c) {
 	windowHeight = h;
 	numberOfColumns = c;
 	numberOfRows = r;
-	boxWidth = w / (r + 2);
-	boxHeight = h / (c + 4);
+	boxWidth = w / (c + 2);
+	boxHeight = h / (r + 2);
 }
 
-void Frame::initBoard() {
+void Frame::renderBoard() {
 	SDL_SetRenderDrawColor(ren, WHITE, SDL_ALPHA_OPAQUE);
 	SDL_RenderClear(ren);
 	SDL_SetRenderDrawColor(ren, GREY, 255);
 
-	for (int i = 1; i <= numberOfRows + 1; i++) {
-		SDL_RenderDrawLine(ren, i * boxWidth, 2 * boxHeight, i * boxWidth, numberOfColumns * boxHeight + 2 * boxHeight);
+	for (int i = 2; i < numberOfRows + 1; i++) {
+		SDL_RenderDrawLine(ren, boxWidth, i * boxHeight, (numberOfColumns + 1) * boxWidth, i * boxHeight);
 	}
 
 	for (int i = 1; i <= numberOfColumns + 1; i++) {
-		SDL_RenderDrawLine(ren, boxWidth, i * boxHeight + boxHeight, numberOfRows * boxWidth + boxWidth, i * boxHeight + boxHeight);
+		SDL_RenderDrawLine(ren, i * boxWidth, 2 * boxHeight, i * boxWidth, numberOfRows * boxHeight);
 	}
 
 	SDL_RenderDrawLine(ren, 4 * boxWidth, boxHeight, 6 * boxWidth , boxHeight);
@@ -59,11 +59,11 @@ void Frame::initBoard() {
 	SDL_SetRenderDrawColor(ren, BLACK, 255);
 	SDL_Rect rect;
 	
-	rect.x = windowWidth / 2 + 1.5;
-	rect.y = windowHeight / 2 + 1.5;
+	rect.x = windowWidth / 2 - 1.5;
+	rect.y = windowHeight / 2 - 1.5;
 	rect.w = 5;
 	rect.h = 5;
-	SDL_RenderFillRect(ren, &rect);
+	SDL_RenderDrawRect(ren, &rect);
 
 	SDL_RenderPresent(ren);
 }
@@ -80,22 +80,20 @@ void Frame::update() {
 }
 
 
-void Frame::handlePlayerChoice() {
+int Frame::handlePlayerChoice() {
 	SDL_Event evnt;
-	bool doRepeat = true;
 	positionArrReset();
 
-	while (doRepeat) {
+	while (true) {
 		SDL_PollEvent(&evnt);
-		if (evnt.type == SDL_QUIT) return;
+		if (evnt.type == SDL_QUIT) return -1;
 		if (evnt.type == SDL_MOUSEMOTION) 
 		{
 			changeBoxInner(evnt.button.x, evnt.button.y);
 		}
 		if (evnt.type == SDL_MOUSEBUTTONDOWN) 
 		{
-			getActiveBoxIndexes();
-			doRepeat = false;
+			if (getActiveBoxIndexes()) return 0;
 		}
 	}
 }
@@ -106,7 +104,7 @@ void Frame::positionArrReset() {
 	}
 }
 
-void Frame::replacemeValuesInPositionArr() {
+void Frame::replacemeValuesInPositionArr(){
 	positionArr[0][0] = positionArr[1][0];
 	positionArr[0][1] = positionArr[1][1];
 	positionArr[0][2] = positionArr[1][2];
@@ -121,7 +119,8 @@ void Frame::addValuesToArr(double a, double b, double c, double d) {
 }
 
 void Frame::checkAndWrite(int v1, int v2, int x1, int y1, int x2, int y2) {
-	if (board->getCurrentPoint() == v1 || board->getCurrentPoint() == v2) {
+	if (board->getCurrentPoint() == v1 || board->getCurrentPoint() == v2) 
+	{
 		replacemeValuesInPositionArr();
 		addValuesToArr(x1, y1, x2, y2);
 		if (board->getCurrentPoint() == v1) temporaryPoint = v2;
@@ -132,46 +131,49 @@ void Frame::checkAndWrite(int v1, int v2, int x1, int y1, int x2, int y2) {
 void Frame::changeBoxInner(int x, int y)
 {
 	double boxY, boxX;
-	double temp1, temp2, temp3, temp4, temp5, temp6;
-	for (int i = 0; i < numberOfColumns + 2; i++){
+	double a, b, c, d, e, f;
+	double v0, v1, v2, v3;
+
+	for (int i = 0; i < numberOfRows; i++){
 		boxY = (i + 1) * boxHeight;
-		for (int j = 0; j < numberOfRows; j++){
+		for (int j = 0; j < numberOfColumns; j++){
 			boxX = (j + 1) * boxWidth;
 			if (boxY <= y && boxY + boxHeight > y && boxX <= x && boxX + boxWidth > x) {
-				temp1 = (double)boxX + (double)boxWidth / 5;
-				temp2 = (double)boxX + (double)boxWidth / 5 * 4;
-				temp3 = (double)boxY + (double)boxHeight / 5;
-				temp4 = (double)boxY + (double)boxHeight / 5 * 4;
-				temp5 = (double)boxX + (double)boxWidth / 2;
-				temp6 = (double)boxY + (double)boxHeight / 2;
+				a = (double)boxX + (double)boxWidth / 5;
+				b = (double)boxX + (double)boxWidth / 5 * 4;
+				c = (double)boxY + (double)boxHeight / 5;
+				d = (double)boxY + (double)boxHeight / 5 * 4;
+				e = (double)boxX + (double)boxWidth / 2;
+				f = (double)boxY + (double)boxHeight / 2;
+				v0 = board->getVertex(i, j, 0);
+				v1 = board->getVertex(i, j, 1);
+				v2 = board->getVertex(i, j, 2);
+				v3 = board->getVertex(i, j, 3);
 
-				if (x < temp1 && y > temp3 && y < temp4) {
-					if (j == 0)continue;
-					if (!board->isLeftConnected(i, j)) checkAndWrite(board->getVertex(i, j, 0), board->getVertex(i, j, 2), boxX, boxY, boxX, boxY + boxHeight);
+				if (x < a && y > c && y < d && j != 0) {
+					if (!board->isLeftConnected(i, j)) checkAndWrite(v0, v2, boxX, boxY, boxX, boxY + boxHeight);
 				}
 
-				if (x > temp2 && y > temp3 && y < temp4) {
-					if (j + 1 == numberOfRows) continue;
-					if (!board->isRightConnected(i, j)) checkAndWrite(board->getVertex(i, j, 1), board->getVertex(i, j, 3), boxX + boxWidth, boxY, boxX + boxWidth, boxY + boxHeight);
+				if (x > b && y > c && y < d && j + 1 != numberOfRows) {
+					if (!board->isRightConnected(i, j)) checkAndWrite(v1, v3, boxX + boxWidth, boxY, boxX + boxWidth, boxY + boxHeight);
 				}
 
-				if (y < temp3) {
-					if (i == 0)continue;
-					if (!board->isUpperConnected(i, j)) checkAndWrite(board->getVertex(i, j, 0), board->getVertex(i, j, 1), boxX, boxY, boxX + boxWidth, boxY);
+				if (y < c && (i != 0 || i + 1 != numberOfColumns)) {
+					if (!board->isUpperConnected(i, j)) checkAndWrite(v0, v1, boxX, boxY, boxX + boxWidth, boxY);
 				}
 
-				if (y > temp4) {
-					if (i + 1 == numberOfColumns) continue;
-					if (!board->isBottomConnected(i, j)) checkAndWrite(board->getVertex(i, j, 2), board->getVertex(i, j, 3), boxX, boxY + boxHeight, boxX + boxWidth, boxY + boxHeight);
+				if (y > d && i != numberOfColumns) {
+					if (!board->isBottomConnected(i, j)) checkAndWrite(v2, v3, boxX, boxY + boxHeight, boxX + boxWidth, boxY + boxHeight);
 				}
 
-				if ((x > temp1 && x < temp5 && y > temp3 && y < temp6) || (x > temp5 && x < temp2 && y > temp6 && y < temp4)){
-					if (!board->isLeftRightConnected(i, j)) checkAndWrite(board->getVertex(i, j, 0), board->getVertex(i, j, 3), boxX, boxY, boxX + boxWidth, boxY + boxHeight);
+				if ((x > a && x < e && y > c && y < f) || (x > e && x < b && y > f && y < d)){
+					if (!board->isLeftRightConnected(i, j)) checkAndWrite(v0, v3, boxX, boxY, boxX + boxWidth, boxY + boxHeight);
 				}
 
-				if ((x > temp5 && x < temp2 && y > temp3 && y < temp6) || (x > temp1 && x < temp5 && y > temp6 && y < temp4)) {
-					if (!board->isRightLeftConnected(i, j)) checkAndWrite(board->getVertex(i, j, 1), board->getVertex(i, j, 2), boxX + boxWidth, boxY, boxX, boxY + boxHeight);
+				if ((x > e && x < b && y > c && y < f) || (x > a && x < e && y > f && y < d)) {
+					if (!board->isRightLeftConnected(i, j)) checkAndWrite(v1, v2, boxX + boxWidth, boxY, boxX, boxY + boxHeight);
 				}
+
 				positions[0] = i; positions[1] = j;
 				update();
 			}
@@ -179,7 +181,7 @@ void Frame::changeBoxInner(int x, int y)
 	}
 }
 
-void Frame::getActiveBoxIndexes() {
+bool Frame::getActiveBoxIndexes() {
 	if (positionArr[0][0] != -1) {
 		if (positions[1] + 1 == positionArr[1][0] / boxWidth && positions[1] + 1 == positionArr[1][2] / boxWidth)		 board->setLeftConnected(positions[0], positions[1]);
 		else if (positions[1] + 2 == positionArr[1][0] / boxWidth && positions[1] + 2 == positionArr[1][2] / boxWidth)	 board->setRightConnected(positions[0], positions[1]);
@@ -187,6 +189,10 @@ void Frame::getActiveBoxIndexes() {
 		else if (positions[0] + 2 == positionArr[1][1] / boxHeight && positions[0] + 2 == positionArr[1][3] / boxHeight) board->setBottomConnected(positions[0], positions[1]);
 		else if (positions[1] + 1 == positionArr[1][0] / boxWidth)														 board->setLeftRightConnected(positions[0], positions[1]);
 		else																											 board->setRightLeftConnected(positions[0], positions[1]);
+	
 		board->setCurrentPoint(temporaryPoint);
+		positionArrReset();
+		return true;
 	}
+	return false;
 }

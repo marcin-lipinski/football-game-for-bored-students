@@ -17,19 +17,20 @@ private:
 
 public:
 	Frame(double, double, double, double, Board*);
-	void handlePlayerChoice();
+	int handlePlayerChoice();
 private:
 	void initVariables(double, double, double, double);
 	void initWindow();
 	void createWindow();
-	void initBoard();
+	void renderBoard();
 	void update();
 	void changeBoxInner(int, int);
 	void addValuesToArr(double, double, double, double);
 	void replacemeValuesInPositionArr();
-	void getActiveBoxIndexes();
+	bool getActiveBoxIndexes();
 	void positionArrReset();
 	void checkAndWrite(int, int, int, int, int, int);
+	int side(int, int, int, int, int, int);
 };
 
 

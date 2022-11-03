@@ -21,10 +21,13 @@ public:
 	int getCurrentPoint();
 	void setCurrentPoint(int);
 	int getVertex(int, int, int);
+	int** pointsState;
 private:
 	Point board[13][9];
 	int width, height;
 	int currentPoint;
 	void initPoints();
+	void initLastRow();
+	void initFirstRow();
 };
 
