@@ -21,7 +21,8 @@ public:
 	int getCurrentPoint();
 	void setCurrentPoint(int);
 	int getVertex(int, int, int);
-	int** pointsState;
+	int possibleMoves();
+	int** points;
 private:
 	Point board[13][9];
 	int width, height;

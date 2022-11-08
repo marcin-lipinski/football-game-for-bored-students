@@ -37,6 +37,7 @@ void Frame::renderBoard() {
 	SDL_RenderClear(ren);
 	SDL_SetRenderDrawColor(ren, GREY, 255);
 
+	//rendering a pitch
 	for (int i = 2; i < numberOfRows + 1; i++) {
 		SDL_RenderDrawLine(ren, boxWidth, i * boxHeight, (numberOfColumns + 1) * boxWidth, i * boxHeight);
 	}
@@ -44,7 +45,7 @@ void Frame::renderBoard() {
 	for (int i = 1; i <= numberOfColumns + 1; i++) {
 		SDL_RenderDrawLine(ren, i * boxWidth, 2 * boxHeight, i * boxWidth, numberOfRows * boxHeight);
 	}
-
+	// rendering goals
 	SDL_RenderDrawLine(ren, 4 * boxWidth, boxHeight, 6 * boxWidth , boxHeight);
 	SDL_RenderDrawLine(ren, 4 * boxWidth, boxHeight, 4 * boxWidth, 2 * boxHeight);
 	SDL_RenderDrawLine(ren, 5 * boxWidth, boxHeight, 5 * boxWidth, 2 * boxHeight);
@@ -55,15 +56,11 @@ void Frame::renderBoard() {
 	SDL_RenderDrawLine(ren, 5 * boxWidth, 13 * boxHeight, 5 * boxWidth, 12 * boxHeight);
 	SDL_RenderDrawLine(ren, 6 * boxWidth, 13 * boxHeight, 6 * boxWidth, 12 * boxHeight);
 
-
-	SDL_SetRenderDrawColor(ren, BLACK, 255);
-	SDL_Rect rect;
-	
-	rect.x = windowWidth / 2 - 1.5;
-	rect.y = windowHeight / 2 - 1.5;
-	rect.w = 5;
-	rect.h = 5;
-	SDL_RenderDrawRect(ren, &rect);
+	//rendering a dot in mid of a pitch
+	SDL_RenderDrawLineF(ren, windowWidth / 2 - 2, windowHeight / 2 - 2, windowWidth / 2 + 2, windowHeight / 2 - 2);
+	SDL_RenderDrawLineF(ren, windowWidth / 2 - 2, windowHeight / 2 - 2, windowWidth / 2 - 2, windowHeight / 2 + 2);
+	SDL_RenderDrawLineF(ren, windowWidth / 2 - 2, windowHeight / 2 + 2, windowWidth / 2 + 2, windowHeight / 2 + 2);
+	SDL_RenderDrawLineF(ren, windowWidth / 2 + 2, windowHeight / 2 - 2, windowWidth / 2 + 2, windowHeight / 2 + 2);
 
 	SDL_RenderPresent(ren);
 }
@@ -74,26 +71,35 @@ void Frame::update() {
 	SDL_RenderDrawLine(ren, positionArr[0][0], positionArr[0][1], positionArr[0][2], positionArr[0][3]);
 	SDL_RenderPresent(ren);
 
-	SDL_SetRenderDrawColor(ren, BLACK, 255);
+	SDL_SetRenderDrawColor(ren, playerColor[0], playerColor[1], playerColor[2], 255);
 	SDL_RenderDrawLine(ren, positionArr[1][0], positionArr[1][1], positionArr[1][2], positionArr[1][3]);
 	SDL_RenderPresent(ren);
 }
 
+bool Frame::isExitPressed() {
+	SDL_Event evnt;
+	SDL_PollEvent(&evnt);
+	if (evnt.type == SDL_QUIT) return true;
+	else return false;
+}
 
-int Frame::handlePlayerChoice() {
+
+int Frame::handlePlayerChoice(int* color) {
+	playerColor = color;
 	SDL_Event evnt;
 	positionArrReset();
 
 	while (true) {
 		SDL_PollEvent(&evnt);
-		if (evnt.type == SDL_QUIT) return -1;
-		if (evnt.type == SDL_MOUSEMOTION) 
-		{
+		if (evnt.type == SDL_QUIT) {
+			return -1;
+		}
+		if (evnt.type == SDL_MOUSEMOTION){
 			changeBoxInner(evnt.button.x, evnt.button.y);
 		}
-		if (evnt.type == SDL_MOUSEBUTTONDOWN) 
-		{
+		if (evnt.type == SDL_MOUSEBUTTONDOWN){
 			if (getActiveBoxIndexes()) return 0;
+			return 0;
 		}
 	}
 }
@@ -190,9 +196,42 @@ bool Frame::getActiveBoxIndexes() {
 		else if (positions[1] + 1 == positionArr[1][0] / boxWidth)														 board->setLeftRightConnected(positions[0], positions[1]);
 		else																											 board->setRightLeftConnected(positions[0], positions[1]);
 	
+		board->points[board->getCurrentPoint() / 10][board->getCurrentPoint() % 10] = 1;
 		board->setCurrentPoint(temporaryPoint);
 		positionArrReset();
-		return true;
+		if (board->points[temporaryPoint / 10][temporaryPoint % 10] == 1) return false;
+		else return true;
 	}
 	return false;
+}
+
+void Frame::showWinner(const char* uri) {
+	SDL_Rect board;
+	board.w = 250;
+	board.h = 150;
+	board.x = windowWidth / 2 - 125;
+	board.y = windowHeight / 2 - 75;
+	SDL_Surface* boardBMP = SDL_LoadBMP(uri);
+	SDL_Texture* boardTexture = SDL_CreateTextureFromSurface(ren, boardBMP);
+
+	SDL_Rect curtain;
+	curtain.w = windowWidth;
+	curtain.h = windowHeight;
+	curtain.x = 0;
+	curtain.y = 0;
+	SDL_Surface* frameCurtain = SDL_CreateRGBSurface(0, windowWidth, windowHeight, 32, 255, 255, 255, 0);
+	SDL_Texture* frameCurtainTexture = SDL_CreateTextureFromSurface(ren, frameCurtain);
+
+	SDL_SetTextureBlendMode(frameCurtainTexture, SDL_BLENDMODE_BLEND);
+	SDL_SetTextureAlphaMod(frameCurtainTexture, 122);	
+
+	SDL_RenderCopy(ren, frameCurtainTexture, NULL, &curtain);
+	SDL_RenderCopy(ren, boardTexture, NULL, &board);
+	SDL_RenderPresent(ren);
+}
+
+void Frame::exit() {
+	SDL_DestroyWindow(win);
+	SDL_DestroyRenderer(ren);
+	SDL_Quit();
 }

@@ -4,13 +4,31 @@
 Board::Board(int h, int w) {
     width = w;
     height = h;
-    currentPoint = 64;
     initPoints();
 }
 
 void Board::initPoints() {
+    points = (int**)malloc(sizeof(int**) * height);
+
+    for (int i = 0; i < height + 1; i++) {
+        points[i] = (int*)malloc(sizeof(int*) * (width + 1));
+        for (int j = 0; j < width + 2; j++) {
+            points[i][j] = 0;
+            if (i == 1)points[i][j] = 1;
+            if (i == height - 1)points[i][j] = 1;
+            if (j == 0) points[i][j] = 1;
+            if (j == width)points[i][j] = 1;
+        }
+    }
+
+    points[1][4] = 0;
+    points[height - 1][4] = 0;
+
+
+    points[6][4] = 1;
+      
     for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++) {
+        for (int j = 0; j < width; j++) {        
             board[i][j] = Point();
             board[i][j].vertices[0] = i * 10 + j;
             board[i][j].vertices[1] = i * 10 + j + 1;
@@ -26,17 +44,41 @@ void Board::initPoints() {
             if (i + 2 == height) board[i][j].bottom_connection = true;
             if (j == 0) board[i][j].left_connection = true;
             if (j + 1 == width) board[i][j].right_connection = true;
-            std::cout << board[i][j].vertices[0] << "  " << board[i][j].vertices[1] << "     ";
         }
-        std::cout << std::endl;
-        for (int j = 0; j < width; j++) {
-            std::cout << board[i][j].vertices[2] << "  " << board[i][j].vertices[3] << "     ";
-        }
-        std::cout<<std::endl;
-        std::cout << std::endl;
     }
     initFirstRow();
     initLastRow();
+    currentPoint = board[6][4].vertices[0];
+}
+
+int Board::possibleMoves() {
+    int result = 8;
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            if (board[i][j].vertices[3] == currentPoint) {
+                if (board[i][j].right_connection) result--;
+                if (board[i][j].bottom_connection) result--;
+                if (board[i][j].left_right_connection) result--;
+
+                if (board[i][j].right != nullptr) {
+                    if (board[i][j].right->bottom_connection) result--;
+                    if (board[i][j].right->right_left_connection) result--;
+                    if (board[i][j].right->bottom != nullptr) {
+                        if (board[i][j].right->bottom->left_right_connection) result--;
+                        if (board[i][j].right->bottom->left_connection) result--;
+                    }
+                    else result -= 2;
+                }
+                else result -= 4;
+                if (board[i][j].bottom != nullptr) {
+                    if (board[i][j].bottom->right_left_connection) result--;
+                }
+                else result -= 1;
+            }
+        }
+    }
+    std::cout << result << std::endl;
+    return result;
 }
 
 void Board::initFirstRow() {

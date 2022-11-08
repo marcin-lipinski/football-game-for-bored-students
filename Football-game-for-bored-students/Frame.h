@@ -14,10 +14,14 @@ private:
 	double positionArr[2][4];
 	double positions[2];
 	int temporaryPoint;
+	int* playerColor;
 
 public:
 	Frame(double, double, double, double, Board*);
-	int handlePlayerChoice();
+	int handlePlayerChoice(int*);
+	void showWinner(const char*);
+	void exit();
+	bool isExitPressed();
 private:
 	void initVariables(double, double, double, double);
 	void initWindow();
@@ -31,6 +35,9 @@ private:
 	void positionArrReset();
 	void checkAndWrite(int, int, int, int, int, int);
 	int side(int, int, int, int, int, int);
+	bool nextMove();
+
+	
 };
 
 
